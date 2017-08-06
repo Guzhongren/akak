@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>React</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+    <script type="text/javascript">
+        //配置扩展解模块析引用路径
+        dojoConfig = {
+            parseOnLoad: true,
+            async: true,
+            packages: [{
+                name: "plot",
+                location: location.pathname.replace(/\/[^/]+$/, "") + "/plot"
+            }]
+            // paths: {
+            //     extras: location.pathname.replace(/\/[^/]+$/, "") + "/extras"//聚合效果拓展类引用
+            // }
+        };
+    </script>
+
+    <link rel="stylesheet" href="http://localhost:8080/arcgis_js_api/library/4.3/4.3/esri/css/main.css" />
+    <script src="http://localhost:8080/arcgis_js_api/library/4.3/4.3/init.js"></script>
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.3/"></script> -->
+    <style>
+        html,
+        body,
+        #app,
+        #mapViewer {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="mapViewer">
+
+        </div>
+    </div>
+
+
+    <!-- Main -->
+    <script type="text/javascript" src="./dist/js/bundle.js"></script>
+</body>
+
+</html>
