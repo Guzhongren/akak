@@ -12,19 +12,17 @@
             async: true,
             packages: [{
                 name: "plot",
-                location: location.pathname.replace(/\/[^/]+$/, "") + "/plot"
+                location: location.pathname.replace(/\/[^/]+$/, "") + "plot"
             }]
-            // paths: {
-            //     extras: location.pathname.replace(/\/[^/]+$/, "") + "/extras"//聚合效果拓展类引用
-            // }
+
         };
     </script>
 
 
-    <link rel="stylesheet" href="http://localhost:8080/arcgis_js_api/library/4.3/4.3/esri/css/main.css" />
-    <script src="http://localhost:8080/arcgis_js_api/library/4.3/4.3/init.js"></script>
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
-    <script src="https://js.arcgis.com/4.3/"></script> -->
+    <link rel="stylesheet" href="https://localhost/arcgis_js_api/library/4.4/esri/css/main.css" />
+    <script src="https://localhost/arcgis_js_api/library/4.4/init.js"></script>
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.4/"></script>  -->
     <script src="./lib/jquery-2.1.4.min.js"></script>
     <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
@@ -61,7 +59,7 @@
 
                     </div>
                     <div class="col-xs-6 col-md-4">
-                        <button type="button" class="btn btn-primary" id="btnAddDynamicLayer" z-index="999">绘制。。</button>
+                        <button type="button" class="btn btn-primary" id="btnDrawer" value="polygon" z-index="999">绘制。。</button>
                     </div>
                 </div>
             </div>

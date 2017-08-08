@@ -2,21 +2,32 @@ require([
     "esri/Map",
     "esri/views/MapView",
 
-    "plot/plot",
+    "plot/Plot",
 
- "dojo/domReady!"],
-    function (Map, MapView, 
-        plot
+    'dojo/dom',
+    "dojo/on",
+    "dojo/domReady!"],
+    function (Map, MapView,
+        Plot,
+        dom, on
     ) {
+        let ploter = null;
         let map = new Map({
-            basemap: "streets",
-            copyright:"t"
+            basemap: "osm",
+            copyright: "t",
         });
 
         let view = new MapView({
             container: "mapViewer",
-            map: map
+            map: map,
+            center: [106, 33],
+            zoom: 10
         });
 
-        let plot= new plot();
+        view.on("layerview-create", () => {
+            on(dom.byId("btnDrawer"), 'click', () => {
+                ploter = new Plot(view, "polygon");
+                ploter.beginDraw();
+            });
+        });
     });
