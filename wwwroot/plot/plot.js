@@ -45,7 +45,7 @@ define([
             },
             // beginDraw: function () {
             //     let _self = this;
-               
+
             // },
             setListenerToView: function () {
                 let _self = this;
@@ -66,7 +66,10 @@ define([
                     _self._addVertex(evt.mapPoint, true);
                     _self._deactivateDraw();
                 });
-
+                //绘制完成后阻止继续绘制
+                _self._view.on('click', (evt) => {
+                    evt.stopPropagation();
+                });
             },
             _deactivateDraw: function () {
                 let _self = this;
