@@ -7,7 +7,7 @@ console.log(__dirname);
 module.exports = {
     context: path.join(__dirname, './src'),
     entry: [
-        "./index.js"
+        "./webpack.js"
     ],
     output: {
         filename: "js/bundle.js",

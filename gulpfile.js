@@ -1,8 +1,8 @@
 var gulp = require('gulp');
 
 gulp.task('default', function () {
-    gulp.watch("./src/**/*", () => {
-        gulp.src("./src/**/*")
-            .pipe(gulp.dest("./wwwroot/dist/"))
+    gulp.watch("./src/index.js", () => {
+        gulp.src("./src/index.js")
+            .pipe(gulp.dest("./wwwroot/dist/js/"))
     })
 });
