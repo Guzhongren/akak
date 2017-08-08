@@ -8,7 +8,7 @@ define([
     "esri/geometry/geometryEngine",
     "./PlotTypes", "./Symbols"
 ], function (declare, lang, JSON,
-    GraphicsLayer, Polygon, Graphic,geometryEngine,
+    GraphicsLayer, Polygon, Graphic, geometryEngine,
     PlotTypes, Symbols,
     ) {
         return clazz = declare([], {
@@ -37,16 +37,16 @@ define([
                 _self._addGraphicLayer(() => {
                     _self.getPlotType(_self._plotTypeString).then((type) => {
                         console.log(type);
-                        // lang.hitch(_self,);
+                        _self.setListenerToView();
                     }, (err) => {
                         console.log(err.error);
                     });
                 });
             },
-            beginDraw: function () {
-                let _self = this;
-                _self.setListenerToView()
-            },
+            // beginDraw: function () {
+            //     let _self = this;
+               
+            // },
             setListenerToView: function () {
                 let _self = this;
                 _self._pointerDownListener = _self._view.on("pointer-down", (evt) => {
@@ -63,15 +63,15 @@ define([
                 });
                 _self._doubleClickListener = _self._view.on("double-click", (evt) => {
                     evt.stopPropagation();
-                    _self._addVertex(event.mapPoint, true);
+                    _self._addVertex(evt.mapPoint, true);
                     _self._deactivateDraw();
                 });
 
             },
             _deactivateDraw: function () {
                 let _self = this;
-                _self.activePolygon = null,
-                    _self._pointerDownListener.remove();
+                _self.activePolygon = null;
+                _self._pointerDownListener.remove();
                 _self._pointerMoveListener.remove();
                 _self._doubleClickListener.remove();
             },
@@ -133,7 +133,7 @@ define([
                     ringLength = polygon.rings[0].length;
                     polygon.insertPoint(0, ringLength - 1, point);
                 }
-                console.log(polygon,"test");
+                console.log(polygon, "test");
                 _self.activePolygon = polygon;
                 return _self._redrawPolygon(polygon, isFinished);
             },

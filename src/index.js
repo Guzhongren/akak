@@ -27,7 +27,7 @@ require([
         view.on("layerview-create", () => {
             on(dom.byId("btnDrawer"), 'click', () => {
                 ploter = new Plot(view, "polygon");
-                ploter.beginDraw();
+                // ploter.beginDraw();
             });
         });
     });
