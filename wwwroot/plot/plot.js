@@ -133,7 +133,6 @@ define([
                     ringLength = polygon.rings[0].length;
                     polygon.insertPoint(0, ringLength - 1, point);
                 }
-                console.log(polygon, "test");
                 _self.activePolygon = polygon;
                 return _self._redrawPolygon(polygon, isFinished);
             },
@@ -153,7 +152,7 @@ define([
                 let _self = this;
                 let isSuccess = false;
                 // return new Promise((resolve, reject) => {
-                if (!_self._view.map.findLayerById("plotGraphisLayer")) {
+                if (!_self._graphicsLayer) {
                     _self._graphicsLayer = new GraphicsLayer({
                         id: "plotGraphisLayer"
                     });
