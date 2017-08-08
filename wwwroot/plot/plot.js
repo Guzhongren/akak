@@ -28,7 +28,10 @@ define([
                 this._plotTypeString = plotTypeString;
 
                 this._init();
-
+                //绘制完成后阻止继续绘制
+                this._view.on('click', (evt) => {
+                    evt.stopPropagation();
+                });
             },
 
             // 初始化
@@ -36,7 +39,6 @@ define([
                 let _self = this;
                 _self._addGraphicLayer(() => {
                     _self.getPlotType(_self._plotTypeString).then((type) => {
-                        console.log(type);
                         _self.setListenerToView();
                     }, (err) => {
                         console.log(err.error);
@@ -49,6 +51,7 @@ define([
             // },
             setListenerToView: function () {
                 let _self = this;
+
                 _self._pointerDownListener = _self._view.on("pointer-down", (evt) => {
                     evt.stopPropagation();
                     let point = _self._createPoint(evt);
@@ -57,7 +60,7 @@ define([
                 _self._pointerMoveListener = _self._view.on("pointer-move", (evt) => {
                     if (_self.activePolygon) {
                         evt.stopPropagation();
-                        var point = _self._createPoint(event);
+                        let point = _self._createPoint(event);
                         _self._updateFinalVertex(point);
                     }
                 });
@@ -66,10 +69,7 @@ define([
                     _self._addVertex(evt.mapPoint, true);
                     _self._deactivateDraw();
                 });
-                //绘制完成后阻止继续绘制
-                _self._view.on('click', (evt) => {
-                    evt.stopPropagation();
-                });
+
             },
             _deactivateDraw: function () {
                 let _self = this;
@@ -77,6 +77,9 @@ define([
                 _self._pointerDownListener.remove();
                 _self._pointerMoveListener.remove();
                 _self._doubleClickListener.remove();
+                _self._pointerDownListener=null;
+                _self._pointerMoveListener=null;
+                _self._doubleClickListener=null;
             },
 
             _updateFinalVertex: function (point) {

@@ -25,9 +25,12 @@ require([
         });
 
         view.on("layerview-create", () => {
-            on(dom.byId("btnDrawer"), 'click', () => {
-                ploter = new Plot(view, "polygon");
-                // ploter.beginDraw();
-            });
+
+        });
+        // 不能讲button的事件注册在view的on中，会导致button事件类型
+        on(dom.byId("btnDrawer"), 'click', (evt) => {
+            console.log("dsfd");
+            ploter = new Plot(view, "polygon");
+            // ploter.beginDraw();
         });
     });
