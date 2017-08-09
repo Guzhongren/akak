@@ -3,14 +3,16 @@ define([
     "dojo/_base/lang",
     "dojo/json",
     "esri/layers/GraphicsLayer",
+    "esri/geometry/Point",
+    "esri/geometry/Polyline",
     "esri/geometry/Polygon",
     "esri/Graphic",
     "esri/geometry/geometryEngine",
-    "./PlotTypes", "./Symbols"
+    "./PlotTypes", "./Symbols", "./Utils"
 ], function (declare, lang, JSON,
-    GraphicsLayer, Polygon, Graphic, geometryEngine,
-    PlotTypes, Symbols,
-    ) {
+    GraphicsLayer, Point, Polyline, Polygon, Graphic, geometryEngine,
+    PlotTypes, Symbols, Utils) {
+
         return clazz = declare([], {
 
             _view: null, // 地图
@@ -24,7 +26,8 @@ define([
             plotType: null, // 标绘类型
             activePolygon: null, // 标绘polygon
             activePolyline: null, // 标绘polygline
-            activePoints:null,// 标绘点
+            activePoints: null,// 标绘点
+            testPoints: null,
             constructor: function (/*View*/view) {
                 this._view = view;
                 this._init();
@@ -34,6 +37,12 @@ define([
             _init: function () {
                 let _self = this;
                 _self._addGraphicLayer();
+                _self.activePolygon = new Polygon({
+                    spatialReference: _self._view.spatialReference
+                });
+                _self.activePolyline = new Polyline({
+                    spatialReference: _self._view.spatialReference
+                });
             },
             /**
              * 激活绘制功能
@@ -63,7 +72,7 @@ define([
                 _self._graphicsLayer.removeAll();
             },
             /**
-             * 添加事件监听
+             * ==============================================添加事件监听=============================================
              */
             _setListenerToView: function () {
                 let _self = this;
@@ -74,12 +83,22 @@ define([
                 _self._pointerDownListener = _self._view.on("pointer-down", (evt) => {
                     evt.stopPropagation();
                     let point = _self._createPoint(evt);
+
+                    // _self.testPoints = Utils.addVertex(point, _self.testPoints);
+                    console.log(_self.testPoints);
+
                     _self._addVertex(point);
                 });
                 _self._pointerMoveListener = _self._view.on("pointer-move", (evt) => {
                     if (_self.activePolygon) {
                         evt.stopPropagation();
                         let point = _self._createPoint(event);
+                        // if (_self.testPoints) {
+                        //     _self.testPoints = Utils.updateVertex(point, _self.testPoints);
+                        //     _self.reDraw(_self._plotTypeString, _self.testPoints);
+                        // }
+
+
                         _self._updateFinalVertex(point);
                     }
                 });
@@ -90,7 +109,31 @@ define([
                 });
 
             },
-
+            /**
+             * ==============================================添加事件监听=============================================
+             */
+            reDraw: function (plotType, points, isFinish) {
+                let self = this;
+                let currentGeometry = null;
+                let tempGraphic = null;
+                switch (plotType) {
+                    case PlotTypes.CIRCLE:
+                        currentGeometry = _self.activePolygon;
+                        break;
+                    default:
+                        currentGeometry = _self.activePolygon;
+                        points.map((point) => {
+                            _self.activePolygon.insertPoint(point);
+                        });
+                        tempGraphic = new Graphic({
+                            geometry: isFinite ? geometryEngine.simplify(_self.activePolygon) : _self.activePolygon,
+                            symbol: finished ? Symbols.POLYGONACTIVE : Symbols.POLYGONDEACTIVE
+                        });
+                }
+                _self.clear();
+                _slef._graphicsLayer.graphics.add(tempGraphic);
+                console.log("test");
+            },
 
             _updateFinalVertex: function (point) {
                 let _self = this;
@@ -99,7 +142,7 @@ define([
                 polygon.insertPoint(0, ringLength - 1, point);
                 _self._redrawPolygon(polygon);
             },
-            
+
             _redrawPolygon: function (polygon, finished) {
                 let _self = this;
                 // simplify the geometry so it can be drawn accross
