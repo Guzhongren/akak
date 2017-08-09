@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Plot</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+    <script type="text/javascript">
+        //配置扩展解模块析引用路径
+        dojoConfig = {
+            parseOnLoad: true,
+            async: true,
+            packages: [{
+                name: "plot",
+                location: location.pathname.replace(/\/[^/]+$/, "") + "plot"
+            }]
+
+        };
+    </script>
+
+
+    <link rel="stylesheet" href="https://localhost/arcgis_js_api/library/4.4/esri/css/main.css" />
+    <script src="https://localhost/arcgis_js_api/library/4.4/init.js"></script>
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.4/"></script>  -->
+    <script src="./lib/jquery-2.1.4.min.js"></script>
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+
+    <style>
+        html,
+        body,
+        #app,
+        #mapViewer {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+        /* .container-fluid,
+        .row,
+        .col-md-8,
+        .col-xs-8,
+        .col-sm-8 {
+            height: 100%;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="mapViewer">
+            <div class="container-fluid" style="position: fixed; top:20px; right:200px;">
+                <div class="row">
+                    <div class="col-xs-6 col-md-4">
+
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <button type="button" class="btn btn-primary" id="btnDrawer" value="polygon" z-index="999">绘制。。</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Main -->
+    <script type="text/javascript" src="./src/js/index.js"></script>
+</body>
+
+</html>
