@@ -35,9 +35,7 @@ define([
             _init: function () {
                 let _self = this;
                 _self._addGraphicLayer();
-                _self.activePolygon = new Polygon({
-                    spatialReference: _self._view.spatialReference
-                });
+
             },
             /**
              * 激活绘制功能
@@ -48,6 +46,10 @@ define([
                 _self._plotTypeString = plotTypeString;
                 _self._setListenerToView();
 
+                _self.activePoints = null;
+                _self.activePolygon = new Polygon({
+                    spatialReference: _self._view.spatialReference
+                });
             },
             /**
              * 停止编辑
@@ -79,7 +81,6 @@ define([
                     evt.stopPropagation();
                     let point = _self._createPoint(evt);
                     _self.activePoints = Utils.addVertex(point, _self.activePoints);
-                    // _self._addVertex(point);
                     _self.reDraw(_self._plotTypeString, _self.activePoints, false);
                 });
                 _self._pointerMoveListener = _self._view.on("pointer-move", (evt) => {
@@ -111,7 +112,7 @@ define([
                         // currentGeometry = _self.activePolygon;
                         break;
                     default:
-                        _self.activePolygon.removeRing(0);
+                        _self.activePolygon && _self.activePolygon.removeRing(_self.activePolygon.rings.length - 1);
                         let ringLength = _self.activePolygon.addRing(points);
                         let graphic = new Graphic({
                             geometry: isFinish ? geometryEngine.simplify(_self.activePolygon) : _self.activePolygon,
@@ -138,11 +139,13 @@ define([
              */
             _addGraphicLayer: function (callback) {
                 let _self = this;
-                if (!_self._graphicsLayer) {
+                if (!_self._view.map.findLayerById("plotGraphisLayer")) {
                     _self._graphicsLayer = new GraphicsLayer({
                         id: "plotGraphisLayer"
                     });
                     _self._view.map.add(_self._graphicsLayer);
+                } else {
+                    _self._graphicsLayer = _self._view.map.findLayerById("plotGraphisLayer");
                 }
                 if (callback) {
                     callback();

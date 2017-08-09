@@ -25,14 +25,15 @@ require([
         });
 
         view.on("layerview-create", () => {
+            ploter = new Ploter(view);
 
         });
+
         // 不能讲button的事件注册在view的on中，会导致button事件类型
         on(dom.byId("btnDrawer"), 'click', (evt) => {
-            ploter = new Ploter(view);
             ploter.active("polygon");
         });
-        on(dom.byId("btnClear"), "click",(evt)=>{
-            ploter&& ploter.clear();
+        on(dom.byId("btnClear"), "click", (evt) => {
+            ploter && ploter.clear();
         });
     });
