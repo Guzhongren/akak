@@ -23,35 +23,54 @@ define([
             _isFinished: false,
             plotType: null, // 标绘类型
             activePolygon: null, // 标绘polygon
-            constructor: function (/*View*/view,/*线画类型*/plotTypeString) {
+            activePolyline: null, // 标绘polygline
+            activePoints:null,// 标绘点
+            constructor: function (/*View*/view) {
                 this._view = view;
-                this._plotTypeString = plotTypeString;
-
                 this._init();
-                //绘制完成后阻止继续绘制
-                this._view.on('click', (evt) => {
-                    evt.stopPropagation();
-                });
             },
 
             // 初始化
             _init: function () {
                 let _self = this;
-                _self._addGraphicLayer(() => {
-                    _self.getPlotType(_self._plotTypeString).then((type) => {
-                        _self.setListenerToView();
-                    }, (err) => {
-                        console.log(err.error);
-                    });
-                });
+                _self._addGraphicLayer();
             },
-            // beginDraw: function () {
-            //     let _self = this;
-
-            // },
-            setListenerToView: function () {
+            /**
+             * 激活绘制功能
+             * @param  {PlotType} plotTypeString  线画类型
+             */
+            active: function (/*线画类型*/plotTypeString) {
                 let _self = this;
+                _self._plotTypeString = plotTypeString;
+                _self._setListenerToView();
 
+            },
+            /**
+             * 停止编辑
+             */
+            deactivate: function () {
+                let _self = this;
+                _self.activePolygon ? _self.activePolygon = null : null;
+                _self._pointerDownListener.remove();
+                _self._pointerMoveListener.remove();
+                _self._doubleClickListener.remove();
+            },
+            /**
+             * 清除画布
+             */
+            clear: function () {
+                let _self = this;
+                _self._graphicsLayer.removeAll();
+            },
+            /**
+             * 添加事件监听
+             */
+            _setListenerToView: function () {
+                let _self = this;
+                //绘制完成后阻止继续绘制
+                this._view.on('click', (evt) => {
+                    evt.stopPropagation();
+                });
                 _self._pointerDownListener = _self._view.on("pointer-down", (evt) => {
                     evt.stopPropagation();
                     let point = _self._createPoint(evt);
@@ -67,20 +86,11 @@ define([
                 _self._doubleClickListener = _self._view.on("double-click", (evt) => {
                     evt.stopPropagation();
                     _self._addVertex(evt.mapPoint, true);
-                    _self._deactivateDraw();
+                    _self.deactivate();
                 });
 
             },
-            _deactivateDraw: function () {
-                let _self = this;
-                _self.activePolygon = null;
-                _self._pointerDownListener.remove();
-                _self._pointerMoveListener.remove();
-                _self._doubleClickListener.remove();
-                _self._pointerDownListener=null;
-                _self._pointerMoveListener=null;
-                _self._doubleClickListener=null;
-            },
+
 
             _updateFinalVertex: function (point) {
                 let _self = this;
@@ -89,17 +99,7 @@ define([
                 polygon.insertPoint(0, ringLength - 1, point);
                 _self._redrawPolygon(polygon);
             },
-            _clearPolygon: function () {
-                // var polygonGraphic = this._view.graphics.find(function (graphic) {
-                //     return graphic.geometry.type === "polygon";
-                // });
-
-                // if (polygonGraphic) {
-                //     view.graphics.remove(polygonGraphic);
-                // }
-                let _self = this;
-                _self._graphicsLayer.removeAll();
-            },
+            
             _redrawPolygon: function (polygon, finished) {
                 let _self = this;
                 // simplify the geometry so it can be drawn accross
@@ -114,7 +114,7 @@ define([
                     return null;
                 }
 
-                _self._clearPolygon();
+                _self.clear();
 
                 var polygonGraphic = new Graphic({
                     geometry: geometry,

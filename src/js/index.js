@@ -2,13 +2,13 @@ require([
     "esri/Map",
     "esri/views/MapView",
 
-    "plot/Plot",
+    "plot/Ploter",
 
     'dojo/dom',
     "dojo/on",
     "dojo/domReady!"],
     function (Map, MapView,
-        Plot,
+        Ploter,
         dom, on
     ) {
         let ploter = null;
@@ -29,8 +29,7 @@ require([
         });
         // 不能讲button的事件注册在view的on中，会导致button事件类型
         on(dom.byId("btnDrawer"), 'click', (evt) => {
-            console.log("dsfd");
-            ploter = new Plot(view, "polygon");
-            // ploter.beginDraw();
+            ploter = new Ploter(view);
+            ploter.active("polygon");
         });
     });
