@@ -7,11 +7,11 @@ define([
     "esri/geometry/Polygon",
     "esri/Graphic",
     "esri/geometry/geometryEngine",
-    "./PlotTypes", "./Symbols"
+    "./PlotTypes", "./Symbols", "./Utils"
 ], function (declare, lang, JSON,
-    GraphicsLayer,Point, Polygon, Graphic, geometryEngine,
-    PlotTypes, Symbols,
-    ) {
+    GraphicsLayer, Point, Polygon, Graphic, geometryEngine,
+    PlotTypes, Symbols, Utils
+) {
         return clazz = declare([], {
 
             _view: null, // 地图
@@ -25,7 +25,7 @@ define([
             plotType: null, // 标绘类型
             activePolygon: null, // 标绘polygon
             activePolyline: null, // 标绘polygline
-            activePoints:null,// 标绘点
+            activePoints: null,// 标绘点
             constructor: function (/*View*/view) {
                 this._view = view;
                 this._init();
@@ -35,6 +35,9 @@ define([
             _init: function () {
                 let _self = this;
                 _self._addGraphicLayer();
+                _self.activePolygon = new Polygon({
+                    spatialReference: _self._view.spatialReference
+                });
             },
             /**
              * 激活绘制功能
@@ -75,18 +78,23 @@ define([
                 _self._pointerDownListener = _self._view.on("pointer-down", (evt) => {
                     evt.stopPropagation();
                     let point = _self._createPoint(evt);
-                    _self._addVertex(point);
+                    _self.activePoints = Utils.addVertex(point, _self.activePoints);
+                    // _self._addVertex(point);
+                    _self.reDraw(_self._plotTypeString, _self.activePoints, false);
                 });
                 _self._pointerMoveListener = _self._view.on("pointer-move", (evt) => {
-                    if (_self.activePolygon) {
+                    if (_self.activePoints) {
                         evt.stopPropagation();
-                        let point = _self._createPoint(event);
-                        _self._updateFinalVertex(point);
+                        let point = _self._createPoint(evt);
+                        _self.activePoints = Utils.updateVertex(point, _self.activePoints);
+                        _self.reDraw(_self._plotTypeString, _self.activePoints, false);
                     }
                 });
                 _self._doubleClickListener = _self._view.on("double-click", (evt) => {
                     evt.stopPropagation();
-                    _self._addVertex(evt.mapPoint, true);
+                    let point = _self._createPoint(evt);
+                    _self.activePoints = Utils.addVertex(point, _self.activePoints);
+                    _self.reDraw(_self._plotTypeString, _self.activePoints, true);
                     _self.deactivate();
                 });
 
@@ -95,58 +103,27 @@ define([
              * ==============================================添加事件监听=============================================
              */
 
-
-
-            _updateFinalVertex: function (point) {
+            reDraw: function (plotType, points, isFinish) {
                 let _self = this;
-                var polygon = _self.activePolygon.clone();
-                var ringLength = polygon.rings[0].length;
-                polygon.insertPoint(0, ringLength - 1, point);
-                _self._redrawPolygon(polygon);
-            },
-            
-            _redrawPolygon: function (polygon, finished) {
-                let _self = this;
-                // simplify the geometry so it can be drawn accross
-                // the dateline and accepted as input to other services
-                var geometry = finished ? geometryEngine.simplify(polygon) :
-                    polygon;
-
-                if (!geometry && finished) {
-                    console.log(
-                        "Cannot finish polygon. It must be a triangle at minimum. Resume drawing..."
-                    );
-                    return null;
+                // let currentGeometry = null;
+                switch (plotType) {
+                    case PlotTypes.CIRCLE:
+                        // currentGeometry = _self.activePolygon;
+                        break;
+                    default:
+                        _self.activePolygon.removeRing(0);
+                        let ringLength = _self.activePolygon.addRing(points);
+                        let graphic = new Graphic({
+                            geometry: isFinish ? geometryEngine.simplify(_self.activePolygon) : _self.activePolygon,
+                            symbol: isFinish ? Symbols.POLYGONACTIVE : Symbols.POLYGONDEACTIVE
+                        });
+                        _self.clear();
+                        _self._graphicsLayer.graphics.add(graphic);
+                        graphic = null;
                 }
-
-                _self.clear();
-
-                var polygonGraphic = new Graphic({
-                    geometry: geometry,
-                    symbol: finished ? Symbols.POLYGONACTIVE : Symbols.POLYGONDEACTIVE
-                });
-
-                _self._graphicsLayer.graphics.add(polygonGraphic);
-                return geometry;
             },
 
-            _addVertex: function (point, isFinished) {
-                let _self = this;
-                var polygon = _self.activePolygon;
-                var ringLength;
 
-                if (!polygon) {
-                    polygon = new Polygon({
-                        spatialReference: _self._view.spatialReference
-                    });
-                    polygon.addRing([point, point]);
-                } else {
-                    ringLength = polygon.rings[0].length;
-                    polygon.insertPoint(0, ringLength - 1, point);
-                }
-                _self.activePolygon = polygon;
-                return _self._redrawPolygon(polygon, isFinished);
-            },
             /**
              * 根据鼠标点击或移动创建点
              * @param  {event} evt  鼠标点
@@ -161,14 +138,11 @@ define([
              */
             _addGraphicLayer: function (callback) {
                 let _self = this;
-                let isSuccess = false;
-                // return new Promise((resolve, reject) => {
                 if (!_self._graphicsLayer) {
                     _self._graphicsLayer = new GraphicsLayer({
                         id: "plotGraphisLayer"
                     });
                     _self._view.map.add(_self._graphicsLayer);
-                    isSuccess = true;
                 }
                 if (callback) {
                     callback();

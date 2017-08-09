@@ -2,7 +2,7 @@ require([
     "esri/Map",
     "esri/views/MapView",
 
-    "plot/Ploter",
+    "plot/Ploter1",
 
     'dojo/dom',
     "dojo/on",
@@ -31,5 +31,8 @@ require([
         on(dom.byId("btnDrawer"), 'click', (evt) => {
             ploter = new Ploter(view);
             ploter.active("polygon");
+        });
+        on(dom.byId("btnClear"), "click",(evt)=>{
+            ploter&& ploter.clear();
         });
     });
