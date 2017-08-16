@@ -13,7 +13,9 @@ define([
          * @param {"esri/geometry/Point"} points 输入点数据 
          */
         getPoint: function(points){
+            let pints= null;
             
+            return pints
         }
     });
 
