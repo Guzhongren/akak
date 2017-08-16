@@ -47,7 +47,7 @@ define([
                 let _self = this;
                 _self._plotTypeString = plotTypeString;
                 _self._setListenerToView();
-
+                _self._isNext = true;
                 _self.activePoints = null;
                 _self.activePolygon = new Polygon({
                     spatialReference: _self._view.spatialReference
@@ -58,6 +58,7 @@ define([
              */
             deactivate: function () {
                 let _self = this;
+                _self._isNext = false;
                 _self.activePolygon ? _self.activePolygon = null : null;
                 _self._pointerDownListener.remove();
                 _self._pointerMoveListener.remove();
@@ -108,7 +109,6 @@ define([
                     _self.activePoints = Utils.addVertex(point, _self.activePoints);
                     _self.reDraw(_self._plotTypeString, _self.activePoints, true);
                     _self.deactivate();
-                    _self._isNext = true;
                 });
 
             },
@@ -126,16 +126,20 @@ define([
                         // currentGeometry = _self.activePolygon;
                         break;
                     default:
-                        _self.activePolygon && _self.activePolygon.rings.length > 0 && _self.activePolygon.removeRing(_self.activePolygon.rings.length - 1);
-                        _self.activePolygon.addRing(points);
-                        let graphic = new Graphic({
-                            geometry: isFinish ? geometryEngine.simplify(_self.activePolygon) : _self.activePolygon,
-                            symbol: isFinish ? Symbols.POLYGONACTIVE : Symbols.POLYGONDEACTIVE
-                        });
-                        !_self._isNext && _self.removeLastGraphic();
+                        if (_self.activePolygon) {
+                            _self.activePolygon.rings.length > 0 && _self.activePolygon.removeRing(_self.activePolygon.rings.length - 1);
+                            _self.activePolygon.addRing(points);
+                            let graphic = new Graphic({
+                                geometry: isFinish ? geometryEngine.simplify(_self.activePolygon) : _self.activePolygon,
+                                symbol: isFinish ? Symbols.POLYGONACTIVE : Symbols.POLYGONDEACTIVE
+                            });
+                            !_self._isNext && _self.removeLastGraphic();
 
-                        _self._graphicsLayer.graphics.add(graphic);
-                        graphic = null;
+                            _self._graphicsLayer.graphics.add(graphic);
+                            graphic = null;
+                        } else {
+
+                        }
                 }
             },
 
