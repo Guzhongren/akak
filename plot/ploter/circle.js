@@ -7,6 +7,10 @@ define([
     return clazz= new declare([],{
         consturctor: function(){
             
+        },
+        getPoints: function(inputPoints){
+            let center=inputPoints[0];
+            
         }
     });
 

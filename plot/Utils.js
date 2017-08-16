@@ -24,7 +24,7 @@ define([
             points1.push(point);
             points = points1.concat(points2);
         } else if (points && points.length > 2) {
-            let tempPoints = points.splice(-1, 1, point);
+            points.splice(-1, 1, point);
         }
         return points;
     };
