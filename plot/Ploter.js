@@ -125,7 +125,7 @@ define([
                     case PlotTypes.CIRCLE:
                         // currentGeometry = _self.activePolygon;
                         break;
-                    default:
+                    default: // POLYGON
                         if (_self.activePolygon) {
                             _self.activePolygon.rings.length > 0 && _self.activePolygon.removeRing(_self.activePolygon.rings.length - 1);
                             _self.activePolygon.addRing(points);
